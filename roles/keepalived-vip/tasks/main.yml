@@ -1,0 +1,4 @@
+---
+# tasks file for keepalived-vip
+
+- import_tasks: vip.yml

@@ -1,0 +1,23 @@
+[mysqld]
+user          = mysql
+#bind-address = {{ virtual_IP }}
+socket        = /var/lib/mysql/mysql.sock
+port          = {{ mysql_port }}
+basedir       = /usr
+datadir       = /var/lib/mysql
+tmpdir        = /tmp
+log-bin       = mysql-bin
+log-bin-index = mysql-bin.index
+relay_log     = mysql-relay-bin
+relay_log_index = mysql-relay-bin.index
+server-id     = 2
+read_only     = TRUE
+slave_skip_errors=1007,1008
+log-slave-updates
+
+
+[mysqld_safe]
+log-error=/var/log/mariadb/mariadb.log
+pid-file=/var/run/mariadb/mariadb.pid
+
+!includedir /etc/my.cnf.d

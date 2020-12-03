@@ -1,0 +1,89 @@
+
+- name: create replication user
+  mysql_user:
+    login_user: root
+    login_password: "{{ msyql_root_password }}"
+    name: "{{ mysql_replication_user }}"
+    host: "{{ groups['mysql-replication'].1 }}"
+    password: "{{ mysql_replication_password }}"
+    priv: "*.*:REPLICATION CLIENT,REPLICATION SLAVE,RELOAD,CREATE USER,SUPER"
+    state: present
+  when: role == 'active'
+
+- name: create replication user
+  mysql_user:
+    login_user: root
+    login_password: "{{ msyql_root_password }}"
+    name: "{{ mysql_replication_user }}"
+    host: "{{ groups['mysql-replication'].0 }}"
+    password: "{{ mysql_replication_password }}"
+    priv: "*.*:REPLICATION CLIENT,REPLICATION SLAVE,RELOAD,CREATE USER,SUPER"
+    state: present
+  when: role == 'passive'
+
+- name: create mysql "{{ mysql_username }}" user
+  mysql_user:
+    login_user: root
+    login_password: "{{ msyql_root_password }}"
+    name: "{{ mysql_username }}"
+    host_all: yes
+    password: "{{ mysql_password }}"
+    priv: "*.*:ALL"
+    state: present
+
+- name: /etc/my.cnf
+  template:
+    src: templates/my.cnf.active.j2
+    dest: /etc/my.cnf
+  when: role == 'active'
+  notify: Restart Mysql Service
+
+- name: /etc/my.cnf
+  template:
+    src: templates/my.cnf.passive.j2
+    dest: /etc/my.cnf
+  when: role == 'passive'
+  notify: Restart Mysql Service
+
+- name: Configure replication on the slave.
+  sh:
+    cmd: |
+      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} << 'EOF'
+      STOP SLAVE;
+      CHANGE MASTER TO master_host='{{ groups['mysql-replication'].0 }}',
+          master_port={{ mysql_port }},
+          master_user='{{ mysql_replication_user }}',
+          master_password='{{ mysql_replication_password }}';
+      START SLAVE;
+      SHOW MASTER STATUS;
+      EOF
+    condition: |
+      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} -e 'show slave status \G;' | grep -i 'Last_Error: Error'
+    if_rc: 0
+  when: role == "passive"
+  register: test_sh
+
+- debug:
+    var: test_sh
+
+- name: Configure replication on the master.
+  sh:
+    cmd: |
+      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} << 'EOF'
+      STOP SLAVE;
+      CHANGE MASTER TO master_host='{{ groups['mysql-replication'].1 }}',
+          master_port={{ mysql_port }},
+          master_user='{{ mysql_replication_user }}',
+          master_password='{{ mysql_replication_password }}';
+      START SLAVE;
+      SHOW MASTER STATUS;
+      EOF
+    condition: |
+      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} -e 'show slave status \G;' | grep -i 'Last_Error: Error'
+    if_rc: 0
+  when: role == "active"
+  register: test_sh
+
+- debug:
+    var: test_sh
+

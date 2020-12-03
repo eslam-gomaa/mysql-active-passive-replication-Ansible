@@ -1,0 +1,7 @@
+---
+# handlers file for mysql-replication
+
+- name: Restart Mysql Service
+  service:
+    name: "{{ Mariadb_Service }}"
+    state: restarted

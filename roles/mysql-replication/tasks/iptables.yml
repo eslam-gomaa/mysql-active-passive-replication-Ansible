@@ -1,0 +1,91 @@
+- name: Change all filter table chains Policies to ACCEPT # to Avoid blocking on our fingers !
+  iptables:
+    chain: "{{ item }}"
+    policy: ACCEPT
+  with_items: [ 'INPUT', 'FORWARD', 'OUTPUT' ]
+
+- name: Flush Old Rules # Assuming that we're working on NEW machines
+  iptables:
+    chain: "{{ item }}"
+    flush: yes
+  with_items: [ 'INPUT', 'FORWARD', 'OUTPUT' ]
+
+- name: Accept MySQL Connections on "{{ virtual_IP }}" from "{{ msql_allowed_range }}"
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ mysql_port }}"
+    source: "{{ msql_allowed_range }}"
+    destination: "{{ virtual_IP }}"
+    ctstate: NEW
+    syn: match
+    jump: ACCEPT
+    comment: Accept MySQL Connections on "{{ virtual_IP }}" from "{{ msql_allowed_range }}"
+
+- name: Accept new SSH connections from "{{ ssh_allowed_range }}"
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 22
+    source: "{{ ssh_allowed_range }}"
+    ctstate: NEW
+    syn: match
+    jump: ACCEPT
+    comment: Accept new SSH connections from "{{ ssh_allowed_range }}"
+
+- name: Allow New MySQL connections from "{{ groups['mysql-replication'].1 }}" -- for Active master
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ mysql_port }}"
+    source: "{{ groups['mysql-replication'].1 }}"
+    destination: "{{ ansible_default_ipv4.address }}"
+    ctstate: NEW
+    syn: match
+    jump: ACCEPT
+    comment: Allow New MySQL connections from "{{ groups['mysql-replication'].1 }}" -- for Active master
+  when: role == 'active'
+
+- name: Allow New MySQL connections from "{{ groups['mysql-replication'].0 }}" -- for Passive master
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "{{ mysql_port }}"
+    source: "{{ groups['mysql-replication'].0 }}"
+    destination: "{{ ansible_default_ipv4.address }}"
+    ctstate: NEW
+    syn: match
+    jump: ACCEPT
+    comment: Allow New MySQL connections from "{{ groups['mysql-replication'].0 }}" -- for Passive master
+  when: role == 'passive'
+
+- name: Allow related and established connections
+  iptables:
+    chain: INPUT
+    ctstate: ESTABLISHED,RELATED
+    jump: ACCEPT
+  become: yes
+
+- iptables:
+    chain: OUTPUT
+    policy: ACCEPT
+
+- iptables:
+    chain: FORWARD
+    policy: DROP
+
+- iptables:
+    chain: INPUT
+    policy: DROP
+
+- name: Save IPTables
+  sh:
+    cmd: |
+      iptables-save > /etc/iptables-rules
+      chmod +x /etc/rc.d/rc.local
+      cat << EOF >> /etc/rc.d/rc.local
+      iptables-restore < /etc/iptables-rules
+      EOF
+    condition: ls /etc/iptables-rules  # Simple condition --> can be Enhanced later
+    if_rc: 0
+    if_rc_operator: '!='

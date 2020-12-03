@@ -1,0 +1,46 @@
+
+- name: set SELinux to "{{ selinux }}"
+  selinux:
+    policy: targeted
+    state: "{{ selinux }}"
+
+- name: Install keepalived
+  yum:
+    name: "{{ keepalived_pkg }}"
+
+- name: Start & Enable keepalived Service
+  service:
+    name: "{{ keepalived_service }}"
+    enabled: true
+    state: started
+
+- name: Allow non-local ip bind (For VIP)
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "1"
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: create "keepalived_script" user
+  user:
+    name: keepalived_script
+
+- name: Mysql health check script
+  template:
+    src: templates/mysql_check.sh.j2
+    dest: /etc/keepalived/mysql_check.sh
+
+- name: master ACTIVE config
+  template:
+    src: templates/master-active-keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: restart keepalived
+  when: role == 'active'
+
+- name: master ACTIVE config
+  template:
+    src: templates/master-passive-keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: restart keepalived
+  when: role == 'passive'

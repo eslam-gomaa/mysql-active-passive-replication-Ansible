@@ -1,0 +1,12 @@
+[mysql-replication]
+192.168.12.100 role=active
+192.168.12.101 role=passive
+
+#[master-active]
+#192.168.12.100
+
+#[master-passive]
+#192.168.12.101
+
+
+

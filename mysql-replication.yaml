@@ -1,0 +1,6 @@
+
+- hosts: mysql-replication
+  become: yes
+  roles:
+    - keepalived-vip
+    - mysql-replication

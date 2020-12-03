@@ -1,0 +1,7 @@
+---
+# tasks file for mysql-replication
+
+- include_tasks: install-mysql.yml
+- include_tasks: replication-config.yml
+- include_tasks: iptables.yml
+  when: configure_IPtables == True

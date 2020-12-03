@@ -1,0 +1,7 @@
+#!/bin/bash
+
+MYSQL_HOST="localhost"
+MYSQL_PORT={{ mysql_port }}
+MYSQL_USERNAME={{ mysql_replication_user }}
+MYSQL_PASSWORD={{ mysql_replication_password }}
+mysql --host=localhost --port=$MYSQL_PORT --user=$MYSQL_USERNAME --password=$MYSQL_PASSWORD --connect_timeout=3 -e "select version();" #2>/dev/null

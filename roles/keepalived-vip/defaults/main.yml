@@ -1,0 +1,13 @@
+---
+# defaults file for keepalived-vip
+
+Redhat_pkg: keepalived
+Debian_pkg: keepalived
+keepalived_pkg: "{{ Redhat_pkg if ansible_os_family and ansible_distribution_major_version >= '7'  else  Debian_pkg}}"
+
+Redhat_service: keepalived
+Debian_service: keepalived
+keepalived_service: "{{ Redhat_service if ansible_os_family and ansible_distribution_major_version >= '7'  else  Debian_service}}"
+
+
+

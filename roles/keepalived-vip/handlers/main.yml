@@ -1,0 +1,7 @@
+---
+# handlers file for keepalived-vip
+
+- name: restart keepalived
+  service:
+    name: "{{ keepalived_service }}"
+    state: restarted

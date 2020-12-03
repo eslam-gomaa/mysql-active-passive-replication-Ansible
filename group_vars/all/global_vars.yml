@@ -1,0 +1,17 @@
+
+virtual_IP: 192.168.12.102
+mysql_username: admin
+mysql_password: password22
+mysql_port: 3306
+
+msyql_root_password: password22
+mysql_replication_user: replication
+mysql_replication_password: repl_pass
+
+configure_IPtables: True #  True||False
+ssh_allowed_range: '0.0.0.0/0'
+msql_allowed_range: '0.0.0.0/0'
+
+selinux: permissive # Temporary workaround for: Keepalived_vrrp[1566]: Couldn't setgid: 1000 (Operation not permitted)
+                    # --> The issue is related to "SELinux" -- can be fixed later.
+

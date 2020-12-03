@@ -1,0 +1,38 @@
+---
+# Sample Playbook to install MySQL & use "mysql_secure_installation" Ansible Module
+
+- name: Update apt packages
+  become: true
+  apt:
+    upgrade: no
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  when: ansible_os_family == 'Debian' #and ansible_distribution_major_version == '20'
+
+- name: Install Mariadb and its Dependencies On Ubuntu or Centos
+  package:
+    name: "{{ RedHat_Packages if ansible_os_family == 'RedHat' else Ubuntu_Packages }}"
+    state: present
+
+- name: Start Mysql Service
+  service:
+    name: "{{ Mariadb_Service }}"
+    state: started
+    enabled: true
+
+- import_tasks: mysql-python_dependencies.yml
+
+- name: use "mysql_secure_installation" for Fresh MySQL Installation
+  mysql_secure_installation:
+    login_password: ''
+    new_password: "{{ msyql_root_password }}"
+    user: root
+    login_host: localhost
+    hosts: ['localhost', '127.0.0.1', '::1']
+    change_root_password: true
+    remove_anonymous_user: true
+    disallow_root_login_remotely: true
+    remove_test_db: true
+  register: secure
+
+
