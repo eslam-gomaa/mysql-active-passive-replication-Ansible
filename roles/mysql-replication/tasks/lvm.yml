@@ -1,0 +1,25 @@
+
+- name: Create a new ext4 primary partition
+  parted:
+    device: "{{ item }}"
+    number: 1
+    state: present
+    fs_type: ext4
+    flags: [ lvm ]
+  with_items: "{{ data_disks }}"
+
+#
+#- name: Configure LVLM
+#  sh:
+#    cmd: |
+#      #
+#  when: lvm == True # and not specified disks not in the Volume group
+#
+#- name: Expanding LVM
+#  sh:
+#    cmd: |
+#      #
+#  when: # if the specified disk is greater than the current
+#
+
+

@@ -3,12 +3,14 @@
     chain: "{{ item }}"
     policy: ACCEPT
   with_items: [ 'INPUT', 'FORWARD', 'OUTPUT' ]
+  when: flush_old_rules == True
 
 - name: Flush Old Rules # Assuming that we're working on NEW machines
   iptables:
     chain: "{{ item }}"
     flush: yes
   with_items: [ 'INPUT', 'FORWARD', 'OUTPUT' ]
+  when: flush_old_rules == True
 
 - name: Accept MySQL Connections on "{{ virtual_IP }}" from "{{ msql_allowed_range }}"
   iptables:

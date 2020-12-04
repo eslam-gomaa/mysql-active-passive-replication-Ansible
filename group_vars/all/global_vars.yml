@@ -1,5 +1,6 @@
 
-virtual_IP: 192.168.12.102
+#virtual_IP: 192.168.12.102
+virtual_IP: 192.168.122.200
 mysql_username: admin
 mysql_password: password22
 mysql_port: 3306
@@ -11,7 +12,14 @@ mysql_replication_password: repl_pass
 configure_IPtables: True #  True||False
 ssh_allowed_range: '0.0.0.0/0'
 msql_allowed_range: '0.0.0.0/0'
+flush_old_rules: False
 
 selinux: permissive # Temporary workaround for: Keepalived_vrrp[1566]: Couldn't setgid: 1000 (Operation not permitted)
                     # --> The issue is related to "SELinux" -- can be fixed later.
+
+lvm: True           # If False will use the default dir
+data_disks:         # will be used of lvm == "True"
+  - /dev/vdb
+  - /dev/vdc
+
 
