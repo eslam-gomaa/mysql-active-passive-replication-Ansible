@@ -1,17 +1,17 @@
 
-- name: Reset Replication to avoid Errors for the first time.
-  sh:
-    cmd: |
-      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} << 'EOF'
-      STOP SLAVE;
-      RESET MASTER;
-      RESET SLAVE;
-      EOF
-    condition: |
-      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} -e 'show slave status \G;'
-    regexp: True
-    if_stdout: 'Slave_IO_Running: Yes'
-    if_stdout_operator: '!='
+#- name: Reset Replication to avoid Errors for the first time.
+#  sh:
+#    cmd: |
+#      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} << 'EOF'
+#      STOP SLAVE;
+#      RESET MASTER;
+#      RESET SLAVE;
+#      EOF
+#    condition: |
+#      mysql -u root -P {{ mysql_port }} -h localhost -p{{ msyql_root_password }} -e 'show slave status \G;'
+#    regexp: True
+#    if_stdout: 'Slave_IO_Running: Yes'
+#    if_stdout_operator: '!='
 
 - name: Configure replication on the slave.
   sh:
