@@ -1,4 +1,4 @@
-# MySQL Master --> Master -- Active/Passive Replication with Keepalived
+# MySQL `Master/Master` -- `Active/Passive` Replication with Keepalived
 
 Here is an effective, Idempotent and easy to use Ansible Roles for Installing MySQL Replication with Keepalived Virtual IP
 
