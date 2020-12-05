@@ -66,8 +66,15 @@
     dest: /tmp/get-pip.py
     mode: '0440'
 
+#- name: Installing pip2 (Testing ...)
+#  command: python2 /tmp/get-pip.py
+
 - name: Installing pip2 (Testing ...)
-  command: python2 /tmp/get-pip.py
+  sh:
+    cmd: python2 /tmp/get-pip.py 2>/dev/null  # Eliminate deprecation msg -- causes error because it's produced as STDERR
+    condition: pip2.7 --version
+    if_rc: 0
+    if_rc_operator: '!='
 
 - name: Install the MySQL-Python Library
   pip:
