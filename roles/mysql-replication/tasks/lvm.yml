@@ -1,25 +1,71 @@
 
-- name: Create a new ext4 primary partition
+- name: Install LVM
+  yum:
+    name: lvm2
+    state: installed
+
+- name: Create a new primary partition
   parted:
     device: "{{ item }}"
     number: 1
     state: present
-    fs_type: ext4
+    part_type: primary
+    part_end: 100%
     flags: [ lvm ]
   with_items: "{{ data_disks }}"
 
-#
-#- name: Configure LVLM
-#  sh:
-#    cmd: |
-#      #
-#  when: lvm == True # and not specified disks not in the Volume group
-#
-#- name: Expanding LVM
-#  sh:
-#    cmd: |
-#      #
-#  when: # if the specified disk is greater than the current
-#
+- name: Create VG
+  sh:
+    cmd: |
+      pvcreate "{{ data_disks.0 }}1" 2>/dev/null
+      vgcreate -s 16M mysql-data "{{ data_disks.0 }}1" 2>/dev/null
+    condition: pvdisplay  | grep "{{ data_disks.0 }}1" -C 1 | grep mysql-data
+    if_rc: 1
+
+- name: Extend VG
+  sh:
+    cmd: |
+      pvcreate "{{ item }}1" 2>/dev/null
+      vgextend mysql-data "{{ item }}1" 2>/dev/null
+    condition: |
+      pvdisplay  | grep "{{ item }}1" -C 1 | grep mysql-data
+    if_rc: 1
+  with_items: "{{ data_disks }}"
 
 
+#- name: Create LV
+#  lvol:
+#    vg: mysql-data
+#    lv: mysql-lv
+#    size: 100%FREE
+
+- name: Create LV
+  sh:
+    cmd: |
+      lvcreate -n  mysql-lv -l 100%FREE mysql-data 2>/dev/null
+    condition: lvdisplay  | grep mysql-lv
+    if_rc: 1
+
+- name: Create a "{{ data_volume_fs }}" filesystem on "/dev/mysql-data/mysql-lv"
+  filesystem:
+    fstype: "{{ data_volume_fs }}"
+    dev: /dev/mysql-data/mysql-lv
+
+- name: Create dir "/var/lib/mysql"
+  file:
+    path: /var/lib/mysql
+    state: directory
+    mode: '0755'
+
+- name: Mount "/var/lib/mysql" to the create LV
+  mount:
+    path: /var/lib/mysql
+    src: /dev/mysql-data/mysql-lv
+    fstype: "{{ data_volume_fs }}"
+    state: present
+
+- name: mount -a
+  sh:
+    cmd: mount -a
+    condition: df -h | grep /var/lib/mysql
+    if_rc: 1
