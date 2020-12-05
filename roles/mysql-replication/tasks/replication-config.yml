@@ -1,4 +1,14 @@
 
+- name: create replication@localhost user
+  mysql_user:
+    login_user: root
+    login_password: "{{ msyql_root_password }}"
+    name: "{{ mysql_replication_user }}"
+    host: "localhost"
+    password: "{{ mysql_replication_password }}"
+    priv: "*.*:REPLICATION CLIENT,REPLICATION SLAVE,RELOAD,CREATE USER,SUPER"
+    state: present
+
 - name: create replication user
   mysql_user:
     login_user: root
