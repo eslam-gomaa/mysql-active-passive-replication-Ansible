@@ -9,7 +9,7 @@ msyql_root_password: password22
 mysql_replication_user: replication
 mysql_replication_password: repl_pass
 
-configure_IPtables: True #  True||False
+configure_IPtables: True
 ssh_allowed_range: '0.0.0.0/0'
 msql_allowed_range: '0.0.0.0/0'
 flush_old_rules: False
@@ -18,8 +18,7 @@ selinux: permissive # Temporary workaround for: Keepalived_vrrp[1566]: Couldn't 
                     # --> The issue is related to "SELinux" -- can be fixed later.
 
 lvm: True           # If False will use the default dir
-data_disks:         # will be used of lvm == "True"
+data_disks:         # will be used if lvm == "True"
   - /dev/vdb
   - /dev/vdc
-
-
+data_volume_fs: ext4
