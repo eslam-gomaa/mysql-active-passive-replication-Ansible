@@ -2,8 +2,8 @@
 
 Here is an effective, Idempotent and easy to use Ansible Roles for Installing MySQL Replication with Keepalived Virtual IP
 
+---
 
-⚠ **However this repo was tested and works well, It's created for Testing.**
 
 
 ### Features:
@@ -13,6 +13,11 @@ Here is an effective, Idempotent and easy to use Ansible Roles for Installing My
 - [x] Configures `MySQL` Replication
 - [x] Harden incoming traffic with `IPTables`
 - [x] These Roles are idempotent
+
+
+⚠ **However this repo was tested and works well, It's created for Testing.** , (You are free to modify it the way it suits you)
+
+
 
 > Example
 
