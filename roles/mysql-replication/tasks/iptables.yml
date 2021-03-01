@@ -1,4 +1,4 @@
-- name: Change all filter table chains Policies to ACCEPT # to Avoid blocking on our fingers !
+- name: Change all filter table chains Policies to ACCEPT # to Avoid closing on our fingers !
   iptables:
     chain: "{{ item }}"
     policy: ACCEPT
