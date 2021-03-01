@@ -3,6 +3,9 @@
 Here is an effective, Idempotent and easy to use Ansible Roles for Installing MySQL Replication with Keepalived Virtual IP
 
 
+⚠ <mark>However this repo was tested and works well, It's created for Testing.</mark>
+
+
 ### Features:
 
 - [x] Configures `LVM`
