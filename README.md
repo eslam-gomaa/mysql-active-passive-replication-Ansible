@@ -14,6 +14,7 @@ Here is an effective, Idempotent and easy to use Ansible Roles for Installing My
 - [x] [MySQL Secure Installation](https://github.com/eslam-gomaa/mysql-active-passive-replication-Ansible/blob/main/roles/mysql-replication/tasks/install-mysql.yml) 🏹 [Repo Link](https://github.com/eslam-gomaa/mysql_secure_installation_Ansible)
 - [x] Harden incoming traffic with `IPTables`
 - [x] These Roles are idempotent 💁‍♀️ (atchieved with the help of [***sh*** Custome Ansible Module](https://github.com/eslam-gomaa/sh_Ansible))
+- [ ] Enable SSL for MySQL Connection (To be done 😴)
 
 
 ⚠ **However this repo was tested and works well, It's created for Testing.** , (You are free to modify it the way it suits you)
