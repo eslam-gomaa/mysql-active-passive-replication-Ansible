@@ -15,6 +15,7 @@ Here is an effective, Idempotent and easy to use Ansible Roles for Installing My
 - [x] Harden incoming traffic with `IPTables`
 - [x] These Roles are idempotent 💁‍♀️ (achieved with the help of [***sh*** Custome Ansible Module](https://github.com/eslam-gomaa/sh_Ansible))
 - [ ] Enable SSL for MySQL Connection (To be done 😴)
+- [ ] Scheduled Backup (To be done 😴)
 
 
 ⚠ **However this repo was tested and works well, It's created for Testing.** , (You are free to modify it the way it suits you)
