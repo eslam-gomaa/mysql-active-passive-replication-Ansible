@@ -12,7 +12,7 @@
   service:
     name: "{{ keepalived_service }}"
     enabled: true
-    state: started
+    state: restarted
 
 - name: Allow non-local ip bind (For VIP)
   sysctl:
